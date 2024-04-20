@@ -29,7 +29,7 @@ const CreatePostModal = () => {
                     <p className="small-medium lg:base-medium">Create Post</p>
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[525px]">
+            <DialogContent className="sm:max-w-[525px] bg-black">
                 <DialogHeader>
                     <DialogTitle>New Post</DialogTitle>
                 </DialogHeader>

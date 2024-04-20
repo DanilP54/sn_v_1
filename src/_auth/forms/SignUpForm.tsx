@@ -69,7 +69,7 @@ const SignUpForm = () => {
 
     if (isLoggedIn) {
       form.reset()
-      navigate('/home')
+      navigate('/')
     } else {
       return toast({
         variant: "destructive",

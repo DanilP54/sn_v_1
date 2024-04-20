@@ -15,7 +15,7 @@ const FileUpload = ({ handleOnChange }: {
         <>
             <label htmlFor="upload-images" className=' cursor-pointer'>
                 <Image size={21} />
-                <Input onChange={handleOnChange} multiple className="hidden" type='file' accept='image/*' id='upload-images' />
+                <Input onChange={handleOnChange} multiple className="hidden" type='file' accept='image/*, .png, .jpeg, .jpg' id='upload-images' />
             </label>
         </>
     )

@@ -1,3 +1,4 @@
+import { PostValidation } from "@/lib/validation"
 import React from "react"
 
 export interface INewUserType {
@@ -29,4 +30,10 @@ export interface INavLink {
     imgURL: string;
     route: string;
     label: string;
+}
+
+export interface INewPostType {
+    userId: string;
+    text: string;
+    uploadImages?: File[]
 }

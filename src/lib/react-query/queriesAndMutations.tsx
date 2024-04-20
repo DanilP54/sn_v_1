@@ -1,11 +1,13 @@
-import { useQueries, useMutation, useQueryClient, useInfiniteQuery } from "react-query"
-import { createUserAccount, signInAccount, signOutAccount } from "../appwrite/api"
-import { INewUser } from "@/types"
+import { useMutation, useQueryClient, useInfiniteQuery, useQuery } from "react-query"
+import { createPost, createUserAccount, getRecentPosts, signInAccount, signOutAccount } from "../appwrite/api"
+import { INewPostType, INewUserType } from "@/types"
+import { QUERY_KEYS } from "./queryKeys"
+
 
 
 export const useCreateUserAccountMutation = () => {
     return useMutation({
-        mutationFn: (user: INewUser) => createUserAccount(user)
+        mutationFn: (user: INewUserType) => createUserAccount(user)
     })
 }
 
@@ -18,5 +20,26 @@ export const useSignInAccountMutation = () => {
 export const useSignOutAccountMutation = () => {
     return useMutation({
         mutationFn: signOutAccount
+    })
+}
+
+export const useCreatePostMutation = () => {
+
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: (post: INewPostType) => createPost(post),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
+            })
+        }
+    })
+}
+
+export const useGetRecentPosts = () => {
+    return useQuery({
+        queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
+        queryFn: getRecentPosts
     })
 }

@@ -2,20 +2,20 @@ import React from 'react'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, useWatch } from "react-hook-form"
 import { z } from "zod"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
+import { Form, FormControl, FormField, FormItem, FormMessage } from '../ui/form'
 import { toast } from '../ui/use-toast'
 import { Textarea } from '../ui/textarea'
 import { Button } from '../ui/button'
-import { Image } from 'lucide-react'
 import EmojiPopover from '../shared/EmojiPopover'
-import { Input } from '../ui/input'
 import { ACCEPTED_IMAGES_TYPES, PostValidation } from '@/lib/validation'
 import FileUpload from "@/components/shared/FileUpload.tsx";
+import { useCreatePostMutation } from "@/lib/react-query/queriesAndMutations.tsx";
+import { useAuthContext } from "@/context/AuthContext.tsx";
+import { useNavigate } from "react-router-dom";
+import { INewPostType } from '@/types'
 
 
 const PostForm = () => {
-
-    const [mediaUrl, setMediaUrl] = React.useState<string[]>([])
 
     const form = useForm<z.infer<typeof PostValidation>>({
         resolver: zodResolver(PostValidation),
@@ -26,37 +26,49 @@ const PostForm = () => {
     })
 
     const watchFile = useWatch({ name: 'uploadImages', control: form.control })
-    console.log(watchFile)
+    const [mediaUrl, setMediaUrl] = React.useState<string[]>([])
 
-    function onSubmit(data: z.infer<typeof PostValidation>) {
-        console.log(data)
-        toast({
-            title: "You submitted the following values:",
-            description: (
-                <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-                    <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-                </pre>
-            ),
-        })
+    const navigate = useNavigate()
+
+    const { user } = useAuthContext()
+    const { mutateAsync: createPost, isLoading: isCreatedPost } = useCreatePostMutation()
+
+    console.log(watchFile)
+    async function onSubmit(data: z.infer<typeof PostValidation>) {
+
+        const newPost = await createPost({ ...data, userId: user.id })
+
+        if (!newPost) {
+            return toast({
+                title: "Please try again",
+                description: 'Any Error',
+            })
+        }
+        // navigate('/')
     }
 
     const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const uploadFile = e.target.files
         if (uploadFile) {
-            const checkType = checkValidMedia(uploadFile)
-            
-
-
+            const validateMedia = checkValidMedia(uploadFile)
+            if (validateMedia) {
+                const url = URL.createObjectURL(uploadFile[0])
+                setMediaUrl((prevMedia) => [...prevMedia, url])
+            }
         }
     }
 
     const checkValidMedia = (media: FileList) => {
         const checkType = Array.from(media).every(file => ACCEPTED_IMAGES_TYPES.includes(file.type))
-        if(checkType) {
-            toast({
-                title: 
+        if (!checkType) {
+            return toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: '.jpg, .jpeg, .png, files are not accepted.'
             })
         }
+        form.setValue('uploadImages', [...watchFile, ...media])
+        return true
     }
 
 
@@ -64,7 +76,7 @@ const PostForm = () => {
         <>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className='flex flex-col gap-7'>
-                    <div className='relative'>
+                    <div className='relative border rounded-lg bg-gray-950'>
                         <FormField
                             control={form.control}
                             name="text"
@@ -76,7 +88,7 @@ const PostForm = () => {
                                             value={field.value}
                                             spellCheck={true}
                                             placeholder="Tell us a little bit about yourself"
-                                            className="resize-none bg-gray-950 border"
+                                            className="resize-none focus-visible:ring-offset-0 focus-visible:ring-0 focus-visible:outline-none bg-transparent border-none w-11/12"
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -92,7 +104,7 @@ const PostForm = () => {
                             <FormField
                                 control={form.control}
                                 name="uploadImages"
-                                render={({ field }) => (
+                                render={() => (
                                     <FormItem>
                                         <FormControl>
                                             <FileUpload handleOnChange={handleOnChange} />
@@ -103,7 +115,9 @@ const PostForm = () => {
                             />
                         </div>
                         <div>
-                            <Button variant='outline' type="submit">Post</Button>
+                            <Button disabled={isCreatedPost} variant='outline' type="submit">
+                               Post
+                            </Button>
                         </div>
                     </div>
 
