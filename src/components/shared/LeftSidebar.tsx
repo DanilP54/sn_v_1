@@ -19,7 +19,6 @@ const LeftSidebar = () => {
 
   const handleSignOut = (e) => {
     e.preventDefault()
-
     signOut()
 
   }

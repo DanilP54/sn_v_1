@@ -13,27 +13,38 @@ import { useCreatePostMutation } from "@/lib/react-query/queriesAndMutations.tsx
 import { useAuthContext } from "@/context/AuthContext.tsx";
 import { useNavigate } from "react-router-dom";
 import { INewPostType } from '@/types'
+import { Models } from 'appwrite'
 
 
-const PostForm = () => {
+const PostForm = ({ post, action }: {
+    post: Models.Document;
+    action: string;
+}) => {
 
     const form = useForm<z.infer<typeof PostValidation>>({
         resolver: zodResolver(PostValidation),
         defaultValues: {
-            text: '',
+            text: post ? post.captions : '',
             uploadImages: [],
         }
     })
 
-    const watchFile = useWatch({ name: 'uploadImages', control: form.control })
-    const [mediaUrl, setMediaUrl] = React.useState<string[]>([])
+    // 
 
     const navigate = useNavigate()
-
-    const { user } = useAuthContext()
     const { mutateAsync: createPost, isLoading: isCreatedPost } = useCreatePostMutation()
 
-    console.log(watchFile)
+    const watchFile = useWatch({ name: 'uploadImages', control: form.control })
+    const [mediaUrl, setMediaUrl] = React.useState<string[]>([])
+    // 
+
+    // 
+
+    const { user } = useAuthContext()
+
+    // 
+
+    // 
     async function onSubmit(data: z.infer<typeof PostValidation>) {
 
         const newPost = await createPost({ ...data, userId: user.id })
@@ -71,6 +82,7 @@ const PostForm = () => {
         return true
     }
 
+    // 
 
     return (
         <>
@@ -116,7 +128,7 @@ const PostForm = () => {
                         </div>
                         <div>
                             <Button disabled={isCreatedPost} variant='outline' type="submit">
-                               Post
+                                Post
                             </Button>
                         </div>
                     </div>
