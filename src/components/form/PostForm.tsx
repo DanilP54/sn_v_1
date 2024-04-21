@@ -12,8 +12,8 @@ import FileUpload from "@/components/shared/FileUpload.tsx";
 import { useCreatePostMutation } from "@/lib/react-query/queriesAndMutations.tsx";
 import { useAuthContext } from "@/context/AuthContext.tsx";
 import { useNavigate } from "react-router-dom";
-import { INewPostType } from '@/types'
 import { Models } from 'appwrite'
+import { X } from 'lucide-react'
 
 
 const PostForm = ({ post, action }: {
@@ -88,6 +88,8 @@ const PostForm = ({ post, action }: {
         <>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className='flex flex-col gap-7'>
+
+
                     <div className='relative border rounded-lg bg-gray-950'>
                         <FormField
                             control={form.control}
@@ -111,7 +113,23 @@ const PostForm = ({ post, action }: {
                             <EmojiPopover />
                         </div>
                     </div>
+
+
+                    {
+                        action === 'update' && post ? (
+                            <div className='relative'>
+                                <img className='rounded-lg' src={post.imageUrl} alt="" />
+                                <Button type='button' className='p-0 m-0 absolute right-0 bg-slate-700 top-0 h-min rounded-none rounded-se-lg'>
+                                    <X size={18} color='white' />
+                                </Button>
+                            </div>
+                        ) : null
+                    }
+
+
+
                     <div className='flex justify-between items-center'>
+
                         <div className='flex items-center gap-5'>
                             <FormField
                                 control={form.control}
@@ -126,15 +144,19 @@ const PostForm = ({ post, action }: {
                                 )}
                             />
                         </div>
+
+
                         <div>
                             <Button disabled={isCreatedPost} variant='outline' type="submit">
                                 Post
                             </Button>
                         </div>
+
                     </div>
 
                 </form>
-            </Form>
+
+            </Form >
         </>
     )
 }

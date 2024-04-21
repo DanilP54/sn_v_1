@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient, useInfiniteQuery, useQuery } from "react-query"
-import { createPost, createUserAccount, getRecentPosts, signInAccount, signOutAccount } from "../appwrite/api"
+import { createPost, createUserAccount, deleteSavedPost, getRecentPosts, likePost, savePost, signInAccount, signOutAccount } from "../appwrite/api"
 import { INewPostType, INewUserType } from "@/types"
 import { QUERY_KEYS } from "./queryKeys"
+import { date } from "zod"
 
 
 
@@ -41,5 +42,70 @@ export const useGetRecentPosts = () => {
     return useQuery({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
         queryFn: getRecentPosts
+    })
+}
+
+
+export const useLikePostMutation = () => {
+
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: ({ postId, likesArray }: { postId: string, likesArray: string[] }) => likePost(postId, likesArray),
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_POST_BY_ID, data?.$id]
+            })
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
+            })
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_POSTS]
+            })
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_CURRENT_USER]
+            })
+        }
+    })
+}
+
+
+export const useSavePostMutation = () => {
+
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: ({ postId, userId }: { postId: string, userId: string }) => savePost(postId, userId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
+            })
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_POSTS]
+            })
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_CURRENT_USER]
+            })
+        }
+    })
+}
+
+export const useDaleteSavedPostMutation = () => {
+
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: ({ savedId }: { savedId: string }) => deleteSavedPost(savedId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
+            })
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_POSTS]
+            })
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_CURRENT_USER]
+            })
+        }
     })
 }

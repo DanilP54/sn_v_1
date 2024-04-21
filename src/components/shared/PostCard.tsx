@@ -3,6 +3,9 @@ import { Models } from 'appwrite'
 import React from 'react'
 import { Link } from 'react-router-dom'
 import UpdatePostModal from './UpdatePostModal'
+import { useAuthContext } from '@/context/AuthContext'
+import PostStats from './PostStats'
+
 
 interface PostTypeProps {
     post: Models.Document
@@ -10,11 +13,15 @@ interface PostTypeProps {
 
 
 const PostCard = ({ post }: PostTypeProps) => {
-    console.log(post)
+
+    const { user } = useAuthContext()
+
     return (
         <div className='post-card'>
+
             <div className=' flex-between'>
                 <div className='flex items-center gap-3'>
+
                     <Link to={`/profile/${post.creator.$id}`}>
                         <img
                             src={post.creator?.imageUrl || 'assets/icon/profile-placeholder.svg'}
@@ -24,24 +31,46 @@ const PostCard = ({ post }: PostTypeProps) => {
                     </Link>
 
                     <div className='flex flex-col'>
-                        <p className='base-medium lg:body-bold text-light-1'>
-                            {post.creator?.name}
-                        </p>
-                        <div className='flex-center gap-2 text-light-3'>
+
+                        <span className='base-medium lg:body-bold text-light-1'>
+                            {post.creator?.name} {post.creator?.username}
+                        </span>
+
+                        <div className='flex-start text-light-3'>
                             <p className='subtle-semibold lg:small-regular'>
                                 {multiFormatDateString(post.$createdAt)}
                             </p>
                         </div>
                     </div>
+
                 </div>
-                <div>
+
+                <div className={`${user.id !== post.creator.$id && 'hidden'}`}>
                     <UpdatePostModal post={post} />
                 </div>
             </div>
 
+
+            <Link to={`/posts/${post.$id}`}>
+                <div className='small-medium lg:base-madium py-5'>
+                    <p>{post?.captions}</p>
+                </div>
+            </Link>
+
+
+            {
+                post.imageUrl && (
+                    <Link to={'#'}>
+                        <img src={post?.imageUrl} className='rounded-lg mt-5' alt="post image" />
+                    </Link>
+                )
+            }
+
+            <div className='py-4'>
+                <PostStats post={post} userId={user.id} />
+            </div>
+
         </div>
-
-
     )
 }
 

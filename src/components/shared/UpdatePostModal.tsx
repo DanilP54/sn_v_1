@@ -34,7 +34,7 @@ const UpdatePostModal = ({ post }: UpdatePostProps) => {
                     variant="ghost"
                     className="flex gap-4 items-center justify-start w-full group p-0"
                 >
-                    <img src="/assets/icon/edit.svg" alt="update post" />
+                    <img src="/assets/icon/edit.svg" className='w-6' alt="update post" />
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[525px] bg-black">

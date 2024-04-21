@@ -47,7 +47,7 @@ const routes = createBrowserRouter([
                 element: <PostDetails />
             },
             {
-                path: '/create-post',
+                path: '/creaete-post',
                 element: <CreatePost />
             },
             {
