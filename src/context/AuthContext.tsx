@@ -39,11 +39,11 @@ const AuthProvider = ({ children }: {
 
     const checkAuthUser = async () => {
         setLoading(true)
-        
+
         try {
-            
+
             const currentUser = await getCurrentUser()
-            
+
             if (currentUser) {
                 setUser({
                     id: currentUser.$id,

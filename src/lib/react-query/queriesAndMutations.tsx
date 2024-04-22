@@ -1,10 +1,7 @@
 import { useMutation, useQueryClient, useInfiniteQuery, useQuery } from "react-query"
-import { createPost, createUserAccount, deleteSavedPost, getRecentPosts, likePost, savePost, signInAccount, signOutAccount } from "../appwrite/api"
+import { createPost, createUserAccount, deleteSavedPost, getCurrentUser, getRecentPosts, likePost, savePost, signInAccount, signOutAccount } from "../appwrite/api"
 import { INewPostType, INewUserType } from "@/types"
 import { QUERY_KEYS } from "./queryKeys"
-import { date } from "zod"
-
-
 
 export const useCreateUserAccountMutation = () => {
     return useMutation({
@@ -107,5 +104,12 @@ export const useDaleteSavedPostMutation = () => {
                 queryKey: [QUERY_KEYS.GET_CURRENT_USER]
             })
         }
+    })
+}
+
+export const useGetCurrentUser = () => {
+    return useQuery({
+        queryKey: [QUERY_KEYS.GET_CURRENT_USER],
+        queryFn: getCurrentUser,
     })
 }

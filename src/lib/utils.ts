@@ -1,3 +1,4 @@
+import { Models } from "appwrite";
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -5,8 +6,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-//export const convertFileToUrl = (file: File) => URL.createObjectURL(file)
-
+// export const convertFileToUrl = (file: File) => URL.createObjectURL(file)
 
 export function formatDateString(dateString: string) {
 
@@ -26,9 +26,6 @@ export function formatDateString(dateString: string) {
 
   return `${formattedDate} at ${time}`;
 }
-
-
-
 export const multiFormatDateString = (timestamp: string = ""): string => {
   const timestampNum = Math.round(new Date(timestamp).getTime() / 1000);
 
@@ -56,3 +53,16 @@ export const multiFormatDateString = (timestamp: string = ""): string => {
       return "Just now";
   }
 };
+
+export const checkIsLiked = (likesList: string[], userId: string) => {
+  return likesList.includes(userId);
+}
+
+export const checkSavedPost = (saved: Models.Document[], postId: string) => {
+  if (saved) {
+    return saved.find(item => {
+      return item.post.$id === postId
+    })
+  }
+  return false
+}

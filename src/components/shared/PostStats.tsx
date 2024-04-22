@@ -1,16 +1,20 @@
-import { useAuthContext } from '@/context/AuthContext';
-import { useDaleteSavedPostMutation, useLikePostMutation, useSavePostMutation } from '@/lib/react-query/queriesAndMutations';
-import { Models } from 'appwrite'
-import React from 'react'
+import { useDaleteSavedPostMutation, useGetCurrentUser, useLikePostMutation, useSavePostMutation } from '@/lib/react-query/queriesAndMutations';
+import { checkIsLiked, checkSavedPost } from '@/lib/utils';
+import { Models } from 'appwrite';
+import React from 'react';
 
 const PostStats = ({ post, userId }: {
     post: Models.Document;
     userId: string;
 }) => {
 
-    const likesList = post?.likes.map((user: Models.Document) => user?.$id)
+    const { data: currentUser } = useGetCurrentUser()
+    const savedPost = checkSavedPost(currentUser?.save, post.$id)
 
-    const [likes, setLikes] = React.useState<string[]>(likesList)
+    const [likes, setLikes] = React.useState<string[] | undefined>(() => {
+        if (!post) return undefined
+        return post?.likes.map((user: Models.Document) => user?.$id)
+    })
     const [isSaved, setIsSaved] = React.useState(false)
 
     const { mutate: likePost } = useLikePostMutation()
@@ -18,12 +22,40 @@ const PostStats = ({ post, userId }: {
     const { mutate: deleteSavedPost } = useDaleteSavedPostMutation()
 
 
-    const { user } = useAuthContext()
-
 
     React.useEffect(() => {
-        
-    }, [])
+        setIsSaved(!!savedPost)
+    }, [currentUser])
+
+
+
+    const handleLikePost = (e: React.MouseEvent) => {
+        e.stopPropagation()
+
+        let newLikes = [...likes]
+        const hasLiked = newLikes.includes(userId)
+
+        if (hasLiked) {
+            newLikes = newLikes.filter((id) => id !== userId)
+        } else {
+            newLikes.push(userId)
+        }
+
+        setLikes(newLikes)
+        likePost({ postId: post.$id, likesArray: newLikes })
+    }
+
+    const handleSavePost = (e: React.MouseEvent) => {
+        e.stopPropagation()
+
+        if (savedPost) {
+            setIsSaved(false)
+            deleteSavedPost({ savedId: savedPost.$id })
+        } else {
+            setIsSaved(true)
+            savePost({ postId: post.$id, userId })
+        }
+    }
 
 
 
@@ -31,18 +63,21 @@ const PostStats = ({ post, userId }: {
         <div className='flex justify-between items-center px-1 z-20'>
             <div className='flex gap-2 mr-5'>
                 <img
-                    src={'assets/icon/like.svg'}
-                    alt="lile image"
-                    onClick={() => { }}
+                    src={
+                        `${checkIsLiked(likes, userId)
+                            ? 'assets/icon/liked.svg'
+                            : 'assets/icon/like.svg'}`
+                    }
+                    alt="like image"
+                    onClick={handleLikePost}
                     className='cursor-pointer'
                 />
-                <p className='small-medium lg:base-medium'>0</p>
             </div>
             <div className='flex gap-2'>
                 <img
-                    src={'assets/icon/save.svg'}
-                    alt="lile image"
-                    onClick={() => { }}
+                    src={isSaved ? 'assets/icon/saved.svg' : 'assets/icon/save.svg'}
+                    alt="like image"
+                    onClick={handleSavePost}
                     className='cursor-pointer'
                 />
             </div>
