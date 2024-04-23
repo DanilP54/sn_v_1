@@ -11,8 +11,7 @@ const PostStats = ({ post, userId }: {
     const { data: currentUser } = useGetCurrentUser()
     const savedPost = checkSavedPost(currentUser?.save, post.$id)
 
-    const [likes, setLikes] = React.useState<string[] | undefined>(() => {
-        if (!post) return undefined
+    const [likes, setLikes] = React.useState<string[]>(() => {
         return post?.likes.map((user: Models.Document) => user?.$id)
     })
     const [isSaved, setIsSaved] = React.useState(false)
@@ -22,7 +21,6 @@ const PostStats = ({ post, userId }: {
     const { mutate: deleteSavedPost } = useDaleteSavedPostMutation()
 
 
-
     React.useEffect(() => {
         setIsSaved(!!savedPost)
     }, [currentUser])
@@ -30,31 +28,26 @@ const PostStats = ({ post, userId }: {
 
 
     const handleLikePost = (e: React.MouseEvent) => {
-        e.stopPropagation()
+        e.preventDefault()
 
         let newLikes = [...likes]
-        const hasLiked = newLikes.includes(userId)
 
-        if (hasLiked) {
-            newLikes = newLikes.filter((id) => id !== userId)
-        } else {
-            newLikes.push(userId)
-        }
+        newLikes.includes(userId)
+            ? newLikes = newLikes.filter((id) => id !== userId)
+            : newLikes.push(userId)
 
         setLikes(newLikes)
         likePost({ postId: post.$id, likesArray: newLikes })
     }
 
     const handleSavePost = (e: React.MouseEvent) => {
-        e.stopPropagation()
+        e.preventDefault()
 
-        if (savedPost) {
-            setIsSaved(false)
-            deleteSavedPost({ savedId: savedPost.$id })
-        } else {
-            setIsSaved(true)
-            savePost({ postId: post.$id, userId })
-        }
+        savedPost
+            ? deleteSavedPost({ savedId: savedPost.$id })
+            : savePost({ postId: post.$id, userId })
+
+        setIsSaved((prevIsSaved) => !prevIsSaved)
     }
 
 

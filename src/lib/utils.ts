@@ -55,7 +55,7 @@ export const multiFormatDateString = (timestamp: string = ""): string => {
 };
 
 export const checkIsLiked = (likesList: string[], userId: string) => {
-  return likesList.includes(userId);
+  return likesList.includes(userId); 
 }
 
 export const checkSavedPost = (saved: Models.Document[], postId: string) => {

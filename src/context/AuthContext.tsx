@@ -90,6 +90,7 @@ const AuthProvider = ({ children }: {
         <AuthContext.Provider value={value}>
             <QueryProvider>
                 {children}
+                
             </QueryProvider>
         </AuthContext.Provider>
     )

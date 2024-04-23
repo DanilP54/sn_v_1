@@ -1,5 +1,5 @@
 import { ID, Models, Query } from "appwrite";
-import { INewPostType, INewUserType } from "@/types";
+import { INewPostType, INewUserType, IUpdatePost } from "@/types";
 import { account, database, avatar, appWriteConfig, storage } from "./config";
 
 
@@ -103,7 +103,7 @@ export async function signOutAccount() {
     }
 }
 
-// createPost
+
 
 export async function createPost(post: INewPostType) {
 
@@ -130,7 +130,7 @@ export async function createPost(post: INewPostType) {
             ID.unique(),
             {
                 creator: post.userId,
-                captions: post.text,
+                captions: post.caption,
                 imageUrl: fileUrl || null,
                 imageId: newFile.$id,
             }
@@ -151,7 +151,58 @@ export async function createPost(post: INewPostType) {
 
 }
 
-// Upload File
+export async function updatePost(post: IUpdatePost) {
+
+    const hasFile = post?.uploadImages.length > 0;
+
+    try {
+
+        let image = {
+            imageUrl: post.imageUrl,
+            imageId: post.imageId,
+        }
+
+        if (hasFile) {
+            const uplodedFile = await uploadFile(post.uploadImages)
+            if (!uplodedFile) throw Error;
+
+            const fileUrl = await getFileUrl(uplodedFile.$id)
+
+            if (!fileUrl) {
+                await deleteFile(uplodedFile.$id)
+                throw Error
+            }
+
+            image = {
+                ...image,
+                imageUrl: fileUrl,
+                imageId: uplodedFile.$id,
+            }
+        }
+
+        const updatePost = await database.updateDocument(
+            appWriteConfig.databaseId,
+            appWriteConfig.postCollectionId,
+            post.postId,
+            {
+                captions: post.caption,
+                ...image
+            }
+
+        )
+
+        if (!updatePost) {
+            await deleteFile(post.imageId)
+            throw Error
+        }
+
+        return updatePost
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 
 export async function uploadFile(file: File[]) {
     try {
@@ -170,7 +221,6 @@ export async function uploadFile(file: File[]) {
     }
 }
 
-// get file url
 
 export async function getFileUrl(fileId: string) {
     try {
@@ -208,7 +258,7 @@ export async function deleteFile(fileId: string) {
 }
 
 
-// get updated list posts
+
 
 export function getRecentPosts() {
     try {
@@ -227,7 +277,6 @@ export function getRecentPosts() {
     }
 }
 
-// like post
 
 export async function likePost(postId: string, likesArray: string[]) {
     try {
@@ -238,7 +287,6 @@ export async function likePost(postId: string, likesArray: string[]) {
             {
                 likes: likesArray
             }
-
         )
 
         if (!updatePost) throw Error;
@@ -250,7 +298,7 @@ export async function likePost(postId: string, likesArray: string[]) {
 }
 
 
-// save post
+
 
 export async function savePost(postId: string, userId: string) {
     try {
@@ -273,9 +321,6 @@ export async function savePost(postId: string, userId: string) {
 }
 
 
-// delete saved post
-
-
 export async function deleteSavedPost(savedId: string) {
     try {
         const deletedSavedPost = await database.deleteDocument(
@@ -291,3 +336,44 @@ export async function deleteSavedPost(savedId: string) {
         console.log(error)
     }
 }
+
+export async function deletePost(postId: string, imageId: string) {
+
+    if (postId || imageId) throw Error;
+
+    try {
+        const deletedFile = await storage.deleteFile(
+            appWriteConfig.storageId,
+            imageId
+        )
+
+        if (!deletedFile) throw Error;
+
+        const deletedPost = await database.deleteDocument(
+            appWriteConfig.databaseId,
+            appWriteConfig.postCollectionId,
+            postId
+        )
+
+        if (!deletedPost) throw Error;
+
+        return deletedPost
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
+// export async function deleteImage(imageId: string) {
+//     try {
+//         await storage.deleteFile(
+//             appWriteConfig.storageId,
+//             imageId
+//         )
+
+
+//     } catch(error) {
+//         console.log(error)
+//     }
+// }

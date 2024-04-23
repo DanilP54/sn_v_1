@@ -39,7 +39,7 @@ export const SignInValidation = z.object({
 })
 
 export const PostValidation = z.object({
-    text: z.string().max(245, {
+    caption: z.string().max(245, {
         message: "Text must not be longer than 245 characters.",
     }),
     uploadImages: z.array(z.instanceof(File))

@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient, useInfiniteQuery, useQuery } from "react-query"
-import { createPost, createUserAccount, deleteSavedPost, getCurrentUser, getRecentPosts, likePost, savePost, signInAccount, signOutAccount } from "../appwrite/api"
-import { INewPostType, INewUserType } from "@/types"
+import { createPost, createUserAccount, deletePost, deleteSavedPost, getCurrentUser, getRecentPosts, likePost, savePost, signInAccount, signOutAccount, updatePost } from "../appwrite/api"
+import { INewPostType, INewUserType, IUpdatePost } from "@/types"
 import { QUERY_KEYS } from "./queryKeys"
+
 
 export const useCreateUserAccountMutation = () => {
     return useMutation({
@@ -35,6 +36,20 @@ export const useCreatePostMutation = () => {
     })
 }
 
+export const useUpdatePostMutation = () => {
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: (post: IUpdatePost) => updatePost(post),
+        onSuccess: (data) => {
+            console.log(data)
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
+            })
+        }
+    })
+}
+
 export const useGetRecentPosts = () => {
     return useQuery({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
@@ -50,6 +65,7 @@ export const useLikePostMutation = () => {
     return useMutation({
         mutationFn: ({ postId, likesArray }: { postId: string, likesArray: string[] }) => likePost(postId, likesArray),
         onSuccess: (data) => {
+            console.log(data)
             queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.GET_POST_BY_ID, data?.$id]
             })
@@ -111,5 +127,18 @@ export const useGetCurrentUser = () => {
     return useQuery({
         queryKey: [QUERY_KEYS.GET_CURRENT_USER],
         queryFn: getCurrentUser,
+    })
+}
+
+export const useDeletePostMutation = () => {
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: ({ postId, imageId }: { postId: string, imageId: string }) => deletePost(postId, imageId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
+            })
+        }
     })
 }

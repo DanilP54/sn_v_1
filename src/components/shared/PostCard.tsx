@@ -1,10 +1,10 @@
 import { multiFormatDateString } from '@/lib/utils'
 import { Models } from 'appwrite'
-import React from 'react'
 import { Link } from 'react-router-dom'
 import UpdatePostModal from './UpdatePostModal'
 import { useAuthContext } from '@/context/AuthContext'
 import PostStats from './PostStats'
+
 
 
 interface PostTypeProps {

@@ -9,7 +9,7 @@ import { Button } from '../ui/button'
 import EmojiPopover from '../shared/EmojiPopover'
 import { ACCEPTED_IMAGES_TYPES, PostValidation } from '@/lib/validation'
 import FileUpload from "@/components/shared/FileUpload.tsx";
-import { useCreatePostMutation } from "@/lib/react-query/queriesAndMutations.tsx";
+import { useCreatePostMutation, useUpdatePostMutation } from "@/lib/react-query/queriesAndMutations.tsx";
 import { useAuthContext } from "@/context/AuthContext.tsx";
 import { useNavigate } from "react-router-dom";
 import { Models } from 'appwrite'
@@ -18,24 +18,33 @@ import { X } from 'lucide-react'
 
 const PostForm = ({ post, action }: {
     post: Models.Document;
-    action: string;
+    action: "update" | "create";
 }) => {
+    console.log(post)
+    const navigate = useNavigate()
 
     const form = useForm<z.infer<typeof PostValidation>>({
         resolver: zodResolver(PostValidation),
         defaultValues: {
-            text: post ? post.captions : '',
+            caption: post ? post.captions : '',
             uploadImages: [],
         }
     })
 
     // 
 
-    const navigate = useNavigate()
     const { mutateAsync: createPost, isLoading: isCreatedPost } = useCreatePostMutation()
+    const { mutateAsync: updatePost, isLoading: isUpdatePost } = useUpdatePostMutation()
+
+    // 
 
     const watchFile = useWatch({ name: 'uploadImages', control: form.control })
+    const watchCaption = useWatch({ name: 'caption', control: form.control })
+
+    //
+
     const [mediaUrl, setMediaUrl] = React.useState<string[]>([])
+
     // 
 
     // 
@@ -47,15 +56,36 @@ const PostForm = ({ post, action }: {
     // 
     async function onSubmit(data: z.infer<typeof PostValidation>) {
 
-        const newPost = await createPost({ ...data, userId: user.id })
+        if (action === "update" && post) {
 
-        if (!newPost) {
-            return toast({
-                title: "Please try again",
-                description: 'Any Error',
+            const updatedPost = await updatePost({
+                postId: post.$id,
+                imageId: post?.imageId,
+                imageUrl: post?.imageUrl,
+                ...data
             })
+
+            if (!updatedPost) {
+                return toast({
+                    title: "Please try again",
+                    description: 'Any Error',
+                })
+            }
+        } else {
+            const newPost = await createPost({ ...data, userId: user.id })
+
+            if (!newPost) {
+                return toast({
+                    title: "Please try again",
+                    description: 'Any Error',
+                })
+            }
+
+            // navigate('/')
         }
-        // navigate('/')
+
+
+
     }
 
     const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -93,7 +123,7 @@ const PostForm = ({ post, action }: {
                     <div className='relative border rounded-lg bg-gray-950'>
                         <FormField
                             control={form.control}
-                            name="text"
+                            name="caption"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormControl>
@@ -148,7 +178,7 @@ const PostForm = ({ post, action }: {
 
                         <div>
                             <Button disabled={isCreatedPost} variant='outline' type="submit">
-                                Post
+                                {action === "update" ? "Update Post" : "Post"}
                             </Button>
                         </div>
 

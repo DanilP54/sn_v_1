@@ -34,6 +34,14 @@ export interface INavLink {
 
 export interface INewPostType {
     userId: string;
-    text: string;
-    uploadImages?: File[]
+    caption: string;
+    uploadImages: File[]
 }
+
+export type IUpdatePost = {
+    postId: string;
+    caption: string;
+    imageId: string;
+    imageUrl: URL;
+    uploadImages: File[];
+};
