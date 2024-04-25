@@ -1,10 +1,10 @@
-import { useDaleteSavedPostMutation, useGetCurrentUser, useLikePostMutation, useSavePostMutation } from '@/lib/react-query/queriesAndMutations';
+import { useDeleteSavedPostMutation, useGetCurrentUser, useLikePostMutation, useSavePostMutation } from '@/lib/react-query/queriesAndMutations';
 import { checkIsLiked, checkSavedPost } from '@/lib/utils';
 import { Models } from 'appwrite';
 import React from 'react';
 
 const PostStats = ({ post, userId }: {
-    post: Models.Document;
+    post?: Models.Document;
     userId: string;
 }) => {
 
@@ -18,14 +18,11 @@ const PostStats = ({ post, userId }: {
 
     const { mutate: likePost } = useLikePostMutation()
     const { mutate: savePost } = useSavePostMutation()
-    const { mutate: deleteSavedPost } = useDaleteSavedPostMutation()
-
+    const { mutate: deleteSavedPost } = useDeleteSavedPostMutation()
 
     React.useEffect(() => {
         setIsSaved(!!savedPost)
     }, [currentUser])
-
-
 
     const handleLikePost = (e: React.MouseEvent) => {
         e.preventDefault()
@@ -37,7 +34,7 @@ const PostStats = ({ post, userId }: {
             : newLikes.push(userId)
 
         setLikes(newLikes)
-        likePost({ postId: post.$id, likesArray: newLikes })
+        likePost({ postId: post?.$id || '', likesArray: newLikes })
     }
 
     const handleSavePost = (e: React.MouseEvent) => {
@@ -45,7 +42,7 @@ const PostStats = ({ post, userId }: {
 
         savedPost
             ? deleteSavedPost({ savedId: savedPost.$id })
-            : savePost({ postId: post.$id, userId })
+            : savePost({ postId: post?.$id || '', userId })
 
         setIsSaved((prevIsSaved) => !prevIsSaved)
     }
@@ -58,20 +55,20 @@ const PostStats = ({ post, userId }: {
                 <img
                     src={
                         `${checkIsLiked(likes, userId)
-                            ? 'assets/icon/liked.svg'
-                            : 'assets/icon/like.svg'}`
+                            ? '/assets/icon/liked.svg'
+                            : '/assets/icon/like.svg'}`
                     }
-                    alt="like image"
+                    alt="like post image"
                     onClick={handleLikePost}
                     className='cursor-pointer'
                 />
             </div>
             <div className='flex gap-2'>
                 <img
-                    src={isSaved ? 'assets/icon/saved.svg' : 'assets/icon/save.svg'}
-                    alt="like image"
+                    src={isSaved ? "/assets/icon/saved.svg" : "/assets/icon/save.svg"}
+                    alt="save post image"
                     onClick={handleSavePost}
-                    className='cursor-pointer'
+                    className="cursor-pointer"
                 />
             </div>
         </div>

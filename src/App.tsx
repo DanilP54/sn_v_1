@@ -43,7 +43,7 @@ const routes = createBrowserRouter([
                 element: <Saved />
             },
             {
-                path: '/post-details',
+                path: '/post-details/:id',
                 element: <PostDetails />
             },
             {

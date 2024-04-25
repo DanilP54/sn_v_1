@@ -1,6 +1,6 @@
-import { ID, Models, Query } from "appwrite";
-import { INewPostType, INewUserType, IUpdatePost } from "@/types";
-import { account, database, avatar, appWriteConfig, storage } from "./config";
+import {ID, Models, Query} from "appwrite";
+import {INewPostType, INewUserType, IUpdatePost} from "@/types";
+import {account, database, avatar, appWriteConfig, storage} from "./config";
 
 
 export async function createUserAccount(user: INewUserType) {
@@ -104,7 +104,6 @@ export async function signOutAccount() {
 }
 
 
-
 export async function createPost(post: INewPostType) {
 
     try {
@@ -148,7 +147,6 @@ export async function createPost(post: INewPostType) {
     }
 
 
-
 }
 
 export async function updatePost(post: IUpdatePost) {
@@ -188,7 +186,6 @@ export async function updatePost(post: IUpdatePost) {
                 captions: post.caption,
                 ...image
             }
-
         )
 
         if (!updatePost) {
@@ -258,8 +255,6 @@ export async function deleteFile(fileId: string) {
 }
 
 
-
-
 export function getRecentPosts() {
     try {
         const posts = database.listDocuments(
@@ -271,8 +266,7 @@ export function getRecentPosts() {
         if (!posts) throw Error;
 
         return posts
-    }
-    catch (error) {
+    } catch (error) {
         console.log(error)
     }
 }
@@ -296,8 +290,6 @@ export async function likePost(postId: string, likesArray: string[]) {
         console.log(error)
     }
 }
-
-
 
 
 export async function savePost(postId: string, userId: string) {
@@ -337,16 +329,17 @@ export async function deleteSavedPost(savedId: string) {
     }
 }
 
-export async function deletePost(postId: string, imageId: string) {
+export async function deletePost(postId: string | undefined, imageId: string | undefined) {
 
-    if (postId || imageId) throw Error;
+
+    if (!postId || !imageId) throw Error;
 
     try {
         const deletedFile = await storage.deleteFile(
             appWriteConfig.storageId,
             imageId
         )
-
+        console.log(deleteFile)
         if (!deletedFile) throw Error;
 
         const deletedPost = await database.deleteDocument(
@@ -356,7 +349,7 @@ export async function deletePost(postId: string, imageId: string) {
         )
 
         if (!deletedPost) throw Error;
-
+        
         return deletedPost
 
     } catch (error) {
@@ -365,15 +358,22 @@ export async function deletePost(postId: string, imageId: string) {
 }
 
 
-// export async function deleteImage(imageId: string) {
-//     try {
-//         await storage.deleteFile(
-//             appWriteConfig.storageId,
-//             imageId
-//         )
+export async function getPostById(id?: string) {
 
+    if(!id) throw Error
 
-//     } catch(error) {
-//         console.log(error)
-//     }
-// }
+    try {
+        const post = await database.getDocument(
+            appWriteConfig.databaseId,
+            appWriteConfig.postCollectionId,
+            id
+        )
+
+        if (!post) throw Error
+
+        return post;
+
+    } catch (error) {
+        console.log(error)
+    }
+}

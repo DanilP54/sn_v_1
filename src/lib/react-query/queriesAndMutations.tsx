@@ -1,27 +1,43 @@
-import { useMutation, useQueryClient, useInfiniteQuery, useQuery } from "react-query"
-import { createPost, createUserAccount, deletePost, deleteSavedPost, getCurrentUser, getRecentPosts, likePost, savePost, signInAccount, signOutAccount, updatePost } from "../appwrite/api"
+import { useMutation, useQueryClient, useQuery } from "react-query"
+import {
+    createPost,
+    createUserAccount,
+    deletePost,
+    deleteSavedPost,
+    getCurrentUser, getPostById,
+    getRecentPosts,
+    likePost,
+    savePost,
+    signInAccount,
+    signOutAccount,
+    updatePost
+} from "../appwrite/api"
 import { INewPostType, INewUserType, IUpdatePost } from "@/types"
 import { QUERY_KEYS } from "./queryKeys"
 
 
+// create user
 export const useCreateUserAccountMutation = () => {
     return useMutation({
         mutationFn: (user: INewUserType) => createUserAccount(user)
     })
 }
 
+// sign in
 export const useSignInAccountMutation = () => {
     return useMutation({
         mutationFn: (user: { email: string, password: string }) => signInAccount(user)
     })
 }
 
+// sign out
 export const useSignOutAccountMutation = () => {
     return useMutation({
         mutationFn: signOutAccount
     })
 }
 
+// create post
 export const useCreatePostMutation = () => {
 
     const queryClient = useQueryClient()
@@ -36,6 +52,7 @@ export const useCreatePostMutation = () => {
     })
 }
 
+// update post
 export const useUpdatePostMutation = () => {
     const queryClient = useQueryClient()
 
@@ -50,6 +67,7 @@ export const useUpdatePostMutation = () => {
     })
 }
 
+// get posts
 export const useGetRecentPosts = () => {
     return useQuery({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
@@ -57,7 +75,7 @@ export const useGetRecentPosts = () => {
     })
 }
 
-
+// like post
 export const useLikePostMutation = () => {
 
     const queryClient = useQueryClient()
@@ -82,7 +100,7 @@ export const useLikePostMutation = () => {
     })
 }
 
-
+// save post
 export const useSavePostMutation = () => {
 
     const queryClient = useQueryClient()
@@ -103,7 +121,8 @@ export const useSavePostMutation = () => {
     })
 }
 
-export const useDaleteSavedPostMutation = () => {
+// delete saved post
+export const useDeleteSavedPostMutation = () => {
 
     const queryClient = useQueryClient()
 
@@ -123,6 +142,7 @@ export const useDaleteSavedPostMutation = () => {
     })
 }
 
+// get current user
 export const useGetCurrentUser = () => {
     return useQuery({
         queryKey: [QUERY_KEYS.GET_CURRENT_USER],
@@ -130,15 +150,27 @@ export const useGetCurrentUser = () => {
     })
 }
 
+// delete post
 export const useDeletePostMutation = () => {
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: ({ postId, imageId }: { postId: string, imageId: string }) => deletePost(postId, imageId),
+        mutationFn: ({ postId, imageId }: { 
+            postId: string | undefined, 
+            imageId: string | undefined 
+        }) => deletePost(postId, imageId),
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
             })
         }
+    })
+}
+
+export const useGetPostByIdMutation = (postId?: string) => {
+    return useQuery({
+        queryKey: [QUERY_KEYS.GET_POST_BY_ID, postId],
+        queryFn: () => getPostById(postId),
+        enabled: !!postId
     })
 }

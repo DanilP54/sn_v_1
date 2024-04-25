@@ -1,4 +1,3 @@
-import { PostValidation } from "@/lib/validation"
 import React from "react"
 
 export interface INewUserType {
@@ -7,7 +6,6 @@ export interface INewUserType {
     email: string
     password: string
 }
-
 export interface IUserType {
     id: string;
     name: string;

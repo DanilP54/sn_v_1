@@ -1,10 +1,9 @@
-import { multiFormatDateString } from '@/lib/utils'
-import { Models } from 'appwrite'
-import { Link } from 'react-router-dom'
+import {multiFormatDateString} from '@/lib/utils'
+import {Models} from 'appwrite'
+import {Link} from 'react-router-dom'
 import UpdatePostModal from './UpdatePostModal'
-import { useAuthContext } from '@/context/AuthContext'
+import {useAuthContext} from '@/context/AuthContext'
 import PostStats from './PostStats'
-
 
 
 interface PostTypeProps {
@@ -12,9 +11,9 @@ interface PostTypeProps {
 }
 
 
-const PostCard = ({ post }: PostTypeProps) => {
+const PostCard = ({post}: PostTypeProps) => {
 
-    const { user } = useAuthContext()
+    const {user} = useAuthContext()
 
     return (
         <div className='post-card'>
@@ -46,12 +45,12 @@ const PostCard = ({ post }: PostTypeProps) => {
                 </div>
 
                 <div className={`${user.id !== post.creator.$id && 'hidden'}`}>
-                    <UpdatePostModal post={post} />
+                    <UpdatePostModal post={post}/>
                 </div>
             </div>
 
 
-            <Link to={`/posts/${post.$id}`}>
+            <Link to={`/post-details/${post.$id}`}>
                 <div className='small-medium lg:base-madium py-5'>
                     <p>{post?.captions}</p>
                 </div>
@@ -61,13 +60,13 @@ const PostCard = ({ post }: PostTypeProps) => {
             {
                 post.imageUrl && (
                     <Link to={'#'}>
-                        <img src={post?.imageUrl} className='rounded-lg mt-5' alt="post image" />
+                        <img src={post?.imageUrl} className='rounded-lg mt-5' alt="post image"/>
                     </Link>
                 )
             }
 
             <div className='py-4'>
-                <PostStats post={post} userId={user.id} />
+                <PostStats post={post} userId={user.id}/>
             </div>
 
         </div>
