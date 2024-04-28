@@ -7,16 +7,21 @@ import { Outlet } from 'react-router-dom'
 
 
 
+
 const RootLayout = () => {
+
+
+
+
   return (
     <AuthProvider>
       <div className="w-full md:flex">
         <Topbar />
         <LeftSidebar />
-          <section className='flex h-full flex-1'>
-            <Outlet />
-          </section>
-          <BottomBar />
+        <section className='flex h-full flex-1'>
+          <Outlet />
+        </section>
+        <BottomBar />
       </div>
     </AuthProvider>
   )

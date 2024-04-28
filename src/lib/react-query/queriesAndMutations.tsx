@@ -1,13 +1,15 @@
-import { useMutation, useQueryClient, useQuery } from "react-query"
+import { useMutation, useQueryClient, useQuery, useInfiniteQuery } from "@tanstack/react-query"
+
 import {
     createPost,
     createUserAccount,
     deletePost,
     deleteSavedPost,
-    getCurrentUser, getPostById,
+    getCurrentUser, getInfintyPosts, getPostById,
     getRecentPosts,
     likePost,
     savePost,
+    searchPosts,
     signInAccount,
     signOutAccount,
     updatePost
@@ -71,7 +73,7 @@ export const useUpdatePostMutation = () => {
 export const useGetRecentPosts = () => {
     return useQuery({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
-        queryFn: getRecentPosts
+        queryFn: getRecentPosts,
     })
 }
 
@@ -83,7 +85,6 @@ export const useLikePostMutation = () => {
     return useMutation({
         mutationFn: ({ postId, likesArray }: { postId: string, likesArray: string[] }) => likePost(postId, likesArray),
         onSuccess: (data) => {
-            console.log(data)
             queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.GET_POST_BY_ID, data?.$id]
             })
@@ -106,6 +107,7 @@ export const useSavePostMutation = () => {
     const queryClient = useQueryClient()
 
     return useMutation({
+        mutationKey: ['savepost'],
         mutationFn: ({ postId, userId }: { postId: string, userId: string }) => savePost(postId, userId),
         onSuccess: () => {
             queryClient.invalidateQueries({
@@ -155,11 +157,11 @@ export const useDeletePostMutation = () => {
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: ({ postId, imageId }: { 
-            postId: string | undefined, 
-            imageId: string | undefined 
+        mutationFn: ({ postId, imageId }: {
+            postId: string | undefined,
+            imageId: string | undefined
         }) => deletePost(postId, imageId),
-        onSuccess: () => {
+        onSuccess: () => { 
             queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
             })
@@ -172,5 +174,28 @@ export const useGetPostByIdMutation = (postId?: string) => {
         queryKey: [QUERY_KEYS.GET_POST_BY_ID, postId],
         queryFn: () => getPostById(postId),
         enabled: !!postId
+    })
+}
+
+export const useGetInfinityPosts = () => {
+    return useInfiniteQuery({
+        queryKey: [QUERY_KEYS.GET_INFINITE_POSTS],
+        queryFn: getInfintyPosts,
+        getNextPageParam: (lastPage) => {
+            if (lastPage && lastPage.documents.length === 0) {
+                return
+            }
+            const lastId = lastPage?.documents[lastPage.documents.length - 1]?.$id
+            return lastId;
+
+        }
+    })
+}
+
+export const useSearchPost = (searchTerm: string) => {
+    return useQuery({
+        queryKey: [QUERY_KEYS.SEARCH_POSTS, searchTerm],
+        queryFn: () => searchPosts(searchTerm),
+        enabled: !!searchTerm
     })
 }

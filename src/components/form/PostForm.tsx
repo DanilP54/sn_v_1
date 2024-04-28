@@ -23,7 +23,7 @@ const PostForm = ({ post, action }: {
 
     const navigate = useNavigate()
 
-    const toast = useToast()
+    const {toast} = useToast()
 
     const form = useForm<z.infer<typeof PostValidation>>({
         resolver: zodResolver(PostValidation),
@@ -74,8 +74,7 @@ const PostForm = ({ post, action }: {
                     description: 'Any Error',
                 })
             }
-
-            // navigate('/')
+            navigate('/')
         }
 
 

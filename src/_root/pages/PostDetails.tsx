@@ -1,24 +1,22 @@
-
-import { useDeletePostMutation, useGetPostByIdMutation } from "@/lib/react-query/queriesAndMutations.tsx";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import {useDeletePostMutation, useGetPostByIdMutation} from "@/lib/react-query/queriesAndMutations.tsx";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import Loader from "@/components/shared/Loader.tsx";
-import { multiFormatDateString } from "@/lib/utils.ts";
-import { useAuthContext } from "@/context/AuthContext.tsx";
-import { Button } from "@/components/ui/button.tsx";
+import {multiFormatDateString} from "@/lib/utils.ts";
+import {useAuthContext} from "@/context/AuthContext.tsx";
+import {Button} from "@/components/ui/button.tsx";
 import PostStats from '@/components/shared/PostStats';
-import { useToast } from "@/components/ui/use-toast";
+import {useToast} from "@/components/ui/use-toast";
 import UpdatePostModal from "@/components/shared/UpdatePostModal";
 
 const PostDetails = () => {
-    const { toast } = useToast()
-    const { id } = useParams();
+    const {toast} = useToast()
+    const {id} = useParams();
     const navigate = useNavigate()
 
 
-
-    const { data: post, isLoading } = useGetPostByIdMutation(id || '')
-    const { mutateAsync: deletePost, isLoading: isDeletePost } = useDeletePostMutation()
-    const { user } = useAuthContext()
+    const {data: post, isLoading} = useGetPostByIdMutation(id || '')
+    const {mutateAsync: deletePost, isLoading: isDeletePost} = useDeletePostMutation()
+    const {user} = useAuthContext()
 
 
     const handleDeletePost = async () => {
@@ -44,7 +42,7 @@ const PostDetails = () => {
     return (
         <div className='post_details-container '>
             {
-                isLoading ? <Loader /> : (
+                isLoading ? <Loader/> : (
                     <div className='post_details-card'>
 
                         <img
@@ -55,7 +53,7 @@ const PostDetails = () => {
                         <div className='post_details-info'>
                             <div className='flex-between w-full'>
                                 <Link to={`/profile/${post?.creator?.$id}`}
-                                    className='flex items-center gap-3'
+                                      className='flex items-center gap-3'
                                 >
                                     <img
                                         src={post?.creator?.imageUrl || 'assets/icon/profile-placeholder.svg'}
@@ -75,7 +73,7 @@ const PostDetails = () => {
                                 </Link>
                                 <div className='flex-center gap-4'>
                                     <div className={`${user.id !== post?.creator.$id && 'hidden'}`}>
-                                        <UpdatePostModal post={post} />
+                                        <UpdatePostModal post={post}/>
                                     </div>
                                     <Button
                                         onClick={handleDeletePost}
@@ -90,12 +88,12 @@ const PostDetails = () => {
                                     </Button>
                                 </div>
                             </div>
-                            <hr className={'border w-full border-dark-4/80'} />
+                            <hr className={'border w-full border-dark-4/80'}/>
                             <div className='small-medium lg:base-madium py-5 flex-1'>
                                 <p>{post?.captions}</p>
                             </div>
                             <div className='w-full'>
-                                <PostStats post={post} userId={user.id} />
+                                <PostStats post={post} userId={user.id}/>
                             </div>
                         </div>
 

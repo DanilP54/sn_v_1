@@ -4,6 +4,7 @@ import { getCurrentUser } from '@/lib/appwrite/api';
 import { useNavigate } from 'react-router-dom';
 import QueryProvider from '@/lib/react-query/QueryProvider';
 
+
 export const INITIAL_USER = {
     id: '',
     email: '',
@@ -87,12 +88,13 @@ const AuthProvider = ({ children }: {
     }
 
     return (
+
         <AuthContext.Provider value={value}>
             <QueryProvider>
                 {children}
-                
             </QueryProvider>
-        </AuthContext.Provider>
+        </AuthContext.Provider >
+
     )
 }
 
