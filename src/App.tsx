@@ -6,12 +6,10 @@ import {
     Home,
     Profile,
     Explore,
-    People,
+
     Saved,
     PostDetails,
     AllUsers,
-    CreatePost,
-    EditPost,
 } from "@/_root/pages"
 
 import AuthLayout from "./_auth/AuthLayout"
@@ -47,17 +45,10 @@ const routes = createBrowserRouter([
                 element: <PostDetails />
             },
             {
-                path: '/creaete-post',
-                element: <CreatePost />
-            },
-            {
                 path: '/users',
                 element: <AllUsers />
             },
-            {
-                path: '/edit/:id',
-                element: <EditPost />
-            }
+           
         ],
     },
     {
