@@ -4,10 +4,10 @@ import { Models } from 'appwrite';
 import React from 'react';
 
 const PostStats = ({ post, userId }: {
-    post?: Models.Document;
+    post: Models.Document;
     userId: string;
 }) => {
-    // console.log('update') 
+
     const { data: currentUser } = useGetCurrentUser()
 
     const [isSaved, setIsSaved] = React.useState(false)
@@ -18,11 +18,7 @@ const PostStats = ({ post, userId }: {
     const savedPost = checkSavedPost(currentUser?.save, post.$id)
     const likedPost = checkIsLiked(likes, userId)
 
-    // console.log('initLikesList :', initLikesList)
-    console.log('POSTPOST: ', post)
-    // console.log('currentUser: ', currentUser)
-    console.log('likes: ', likes)
-    console.log('likedPost: ', likedPost)
+
 
     const { mutate: likePost } = useLikePostMutation()
     const { mutate: savePost } = useSavePostMutation()

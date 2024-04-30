@@ -23,7 +23,7 @@ export interface IContextType {
     isAuthenticated: boolean;
     setUser: React.Dispatch<React.SetStateAction<IUserType>>;
     setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
-    // checkAuthUser: () => Promise<boolean>;
+    checkAuthUser: () => Promise<boolean>;
 }
 
 export interface INavLink {

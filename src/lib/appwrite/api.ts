@@ -107,7 +107,7 @@ export async function signOutAccount() {
 export async function createPost(post: INewPostType) {
 
     try {
-        let newFile: Promise<Models.File>;
+        let newFile: Models.File | undefined;
 
         if (post.uploadImages) {
             newFile = await uploadFile(post.uploadImages)
@@ -378,11 +378,11 @@ export async function getPostById(id?: string) {
     }
 }
 
-export async function getInfintyPosts({ pageParam }: { pageParam: string | undefined }): Promise<Models.DocumentList<Models.Document> | undefined> {
-    const queries: string[] = [Query.orderDesc("$updatedAt"), Query.limit(10)]
+export async function getInfintyPosts({ pageParam }: { pageParam: number }) {
+    const queries: any[] = [Query.orderDesc("$updatedAt"), Query.limit(10)]
 
     if (pageParam) {
-        queries.push(Query.cursorAfter(pageParam))
+        queries.push(Query.cursorAfter(pageParam.toString()))
     }
 
     try {

@@ -1,7 +1,6 @@
 import { bottomBarLinks } from '@/constants'
-import React from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import CreatePostModal from './CreatePostModal'
+
 
 const BottomBar = () => {
   const { pathname } = useLocation()

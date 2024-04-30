@@ -18,7 +18,7 @@ import {
 } from "../appwrite/api"
 import { INewPostType, INewUserType, IUpdatePost } from "@/types"
 import { QUERY_KEYS } from "./queryKeys"
-import { Models } from "appwrite"
+
 
 // create user
 export const useCreateUserAccountMutation = () => {
@@ -185,13 +185,14 @@ export const useGetPostByIdMutation = (postId?: string) => {
 export const useGetInfinityPosts = () => {
     return useInfiniteQuery({
         queryKey: [QUERY_KEYS.GET_INFINITE_POSTS],
-        queryFn: getInfintyPosts,
-        getNextPageParam: (lastPage: Models.DocumentList<Models.Document>) => {
+        queryFn: getInfintyPosts as any,
+        initialPageParam: 0,
+        getNextPageParam: (lastPage: any) => {
 
-            if (lastPage && lastPage.documents?.length === 0) {
-                return
+            if (lastPage && lastPage.documents.length === 0) {
+                return null;
             }
-            const lastId = lastPage?.documents[lastPage.documents.length - 1]?.$id
+            const lastId = lastPage.documents[lastPage.documents.length - 1].$id
             return lastId;
 
         }

@@ -59,7 +59,7 @@ export const checkIsLiked = (likesList: string[], userId: string) => {
 }
 
 export const checkSavedPost = (saved: Models.Document[], postId: string) => {
-  if (saved) {
+  if (saved && postId) {
     return saved.find(item => {
       return item.post.$id === postId
     })
