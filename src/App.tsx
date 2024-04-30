@@ -36,7 +36,7 @@ const routes = createBrowserRouter([
             },
             {
                 path: '/all-users',
-                element: <People />
+                element: <AllUsers />
             },
             {
                 path: '/saved',

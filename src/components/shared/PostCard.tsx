@@ -13,7 +13,7 @@ interface PostTypeProps {
 
 const PostCard = ({ post }: PostTypeProps) => {
 
-    const { user } = useAuthContext()
+    const { user } = useAuthContext();
 
     return (
         <div className='post-card'>

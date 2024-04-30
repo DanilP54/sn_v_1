@@ -7,22 +7,32 @@ const PostStats = ({ post, userId }: {
     post?: Models.Document;
     userId: string;
 }) => {
-
+    // console.log('update') 
     const { data: currentUser } = useGetCurrentUser()
-    const savedPost = checkSavedPost(currentUser?.save, post.$id)
 
+    const [isSaved, setIsSaved] = React.useState(false)
     const [likes, setLikes] = React.useState<string[]>(() => {
         return post?.likes.map((user: Models.Document) => user?.$id)
     })
-    const [isSaved, setIsSaved] = React.useState(false)
+
+    const savedPost = checkSavedPost(currentUser?.save, post.$id)
+    const likedPost = checkIsLiked(likes, userId)
+
+    // console.log('initLikesList :', initLikesList)
+    console.log('POSTPOST: ', post)
+    // console.log('currentUser: ', currentUser)
+    console.log('likes: ', likes)
+    console.log('likedPost: ', likedPost)
 
     const { mutate: likePost } = useLikePostMutation()
     const { mutate: savePost } = useSavePostMutation()
     const { mutate: deleteSavedPost } = useDeleteSavedPostMutation()
 
+
     React.useEffect(() => {
         setIsSaved(!!savedPost)
     }, [currentUser])
+
 
     const handleLikePost = (e: React.MouseEvent) => {
         e.preventDefault()
@@ -33,6 +43,7 @@ const PostStats = ({ post, userId }: {
             ? newLikes = newLikes.filter((id) => id !== userId)
             : newLikes.push(userId)
 
+        console.log('newLikes: ', newLikes)
         setLikes(newLikes)
         likePost({ postId: post?.$id || '', likesArray: newLikes })
     }
@@ -53,11 +64,7 @@ const PostStats = ({ post, userId }: {
         <div className='flex justify-between items-center px-1 z-20'>
             <div className='flex gap-2 mr-5'>
                 <img
-                    src={
-                        `${checkIsLiked(likes, userId)
-                            ? '/assets/icon/liked.svg'
-                            : '/assets/icon/like.svg'}`
-                    }
+                    src={likedPost ? '/assets/icon/liked.svg' : '/assets/icon/like.svg'}
                     alt="like post image"
                     onClick={handleLikePost}
                     className='cursor-pointer'

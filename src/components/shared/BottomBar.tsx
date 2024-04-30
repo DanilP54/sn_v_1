@@ -14,12 +14,11 @@ const BottomBar = () => {
             const isActive = pathname === route
             return (
               <li key={label} className='group'>
-                <NavLink to={route} className={`${isActive && "rounded-[10px] bg-primary-500 "
-                  } flex-center flex-col gap-2 p-2 transition`}>
-                  <img src={imgURL} alt={label} width={16} height={16} className={`group-hover:invert-white ${isActive &&
+                <NavLink to={route} className={`${isActive && "rounded-[5px] bg-primary-500"
+                  } flex-center flex-col gap-1 p-2 transition`}>
+                  <img src={imgURL} alt={label} width={26} height={26} className={`group-hover:invert-white ${isActive &&
                     'invert-white'}`} />
-                  <span className='tiny-medium text-light-2'>{label}</span>
-                </NavLink>
+                  </NavLink>
               </li>
             )
           })

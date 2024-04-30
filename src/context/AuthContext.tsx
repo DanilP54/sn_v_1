@@ -12,6 +12,7 @@ export const INITIAL_USER = {
     username: '',
     imageUrl: '',
     bio: '',
+    save: [],
 }
 
 const INITIAL_STATE = {
@@ -32,6 +33,7 @@ export const useAuthContext = () => {
 const AuthProvider = ({ children }: {
     children: React.ReactNode
 }) => {
+    
     const [user, setUser] = React.useState<IUserType>(INITIAL_USER);
     const [isLoading, setLoading] = React.useState(false);
     const [isAuthenticated, setIsAuthenticated] = React.useState(false);
@@ -42,9 +44,8 @@ const AuthProvider = ({ children }: {
         setLoading(true)
 
         try {
-
             const currentUser = await getCurrentUser()
-
+            console.log(currentUser)
             if (currentUser) {
                 setUser({
                     id: currentUser.$id,
@@ -53,6 +54,7 @@ const AuthProvider = ({ children }: {
                     username: currentUser.username,
                     bio: currentUser.bio,
                     imageUrl: currentUser.imageUrl,
+                    save: currentUser.save
                 })
                 setIsAuthenticated(true);
                 return true;

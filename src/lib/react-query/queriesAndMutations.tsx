@@ -7,6 +7,8 @@ import {
     deleteSavedPost,
     getCurrentUser, getInfintyPosts, getPostById,
     getRecentPosts,
+    getUserById,
+    getUsers,
     likePost,
     savePost,
     searchPosts,
@@ -16,7 +18,7 @@ import {
 } from "../appwrite/api"
 import { INewPostType, INewUserType, IUpdatePost } from "@/types"
 import { QUERY_KEYS } from "./queryKeys"
-
+import { Models } from "appwrite"
 
 // create user
 export const useCreateUserAccountMutation = () => {
@@ -97,6 +99,9 @@ export const useLikePostMutation = () => {
             queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.GET_CURRENT_USER]
             })
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_INFINITE_POSTS]
+            })
         }
     })
 }
@@ -161,7 +166,7 @@ export const useDeletePostMutation = () => {
             postId: string | undefined,
             imageId: string | undefined
         }) => deletePost(postId, imageId),
-        onSuccess: () => { 
+        onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
             })
@@ -181,8 +186,9 @@ export const useGetInfinityPosts = () => {
     return useInfiniteQuery({
         queryKey: [QUERY_KEYS.GET_INFINITE_POSTS],
         queryFn: getInfintyPosts,
-        getNextPageParam: (lastPage) => {
-            if (lastPage && lastPage.documents.length === 0) {
+        getNextPageParam: (lastPage: Models.DocumentList<Models.Document>) => {
+
+            if (lastPage && lastPage.documents?.length === 0) {
                 return
             }
             const lastId = lastPage?.documents[lastPage.documents.length - 1]?.$id
@@ -199,3 +205,27 @@ export const useSearchPost = (searchTerm: string) => {
         enabled: !!searchTerm
     })
 }
+
+export const useGetPostById = (postId?: string) => {
+    return useQuery({
+        queryKey: [QUERY_KEYS.GET_POST_BY_ID, postId],
+        queryFn: () => getPostById(postId),
+        enabled: !!postId,
+    });
+};
+
+export const useGetUserById = (userId: string) => {
+    return useQuery({
+        queryKey: [QUERY_KEYS.GET_USER_BY_ID, userId],
+        queryFn: () => getUserById(userId),
+        enabled: !!userId,
+    });
+};
+
+export const useGetUsers = (limit?: number) => {
+    return useQuery({
+        queryKey: [QUERY_KEYS.GET_USERS],
+        queryFn: () => getUsers(limit),
+    });
+};
+

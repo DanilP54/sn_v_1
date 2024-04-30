@@ -1,11 +1,47 @@
-import React from 'react'
+import { Models } from "appwrite";
+
+import GridPostsList from "@/components/shared/GridPostsList";
+import Loader from "@/components/shared/Loader";
+import { useGetCurrentUser } from "@/lib/react-query/queriesAndMutations";
 
 const Saved = () => {
-  return (
-    <div>
-      <h1>Saved</h1>
-    </div>
-  )
-}
+  const { data: currentUser } = useGetCurrentUser();
 
-export default Saved
+  const savePosts = currentUser?.save
+    .map((savePost: Models.Document) => ({
+      ...savePost.post,
+      creator: {
+        imageUrl: currentUser.imageUrl,
+      },
+    }))
+    .reverse();
+
+  return (
+    <div className="saved-container">
+      <div className="flex gap-2 w-full max-w-5xl">
+        <img
+          src="/assets/icon/save.svg"
+          width={36}
+          height={36}
+          alt="edit"
+          className="invert-white"
+        />
+        <h2 className="h3-bold md:h2-bold text-left w-full">Saved Posts</h2>
+      </div>
+
+      {!currentUser ? (
+        <Loader />
+      ) : (
+        <ul className="w-full flex justify-center max-w-5xl gap-9">
+          {savePosts.length === 0 ? (
+            <p className="text-light-4">No available posts</p>
+          ) : (
+            <GridPostsList posts={savePosts} showStats={false} />
+          )}
+        </ul>
+      )}
+    </div>
+  );
+};
+
+export default Saved;

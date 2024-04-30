@@ -359,7 +359,7 @@ export async function deletePost(postId: string | undefined, imageId: string | u
 
 
 export async function getPostById(id?: string) {
-
+    console.log(id)
     if (!id) throw Error
 
     try {
@@ -378,11 +378,11 @@ export async function getPostById(id?: string) {
     }
 }
 
-export async function getInfintyPosts({ pageParam }: { pageParam: number }) {
+export async function getInfintyPosts({ pageParam }: { pageParam: string | undefined }): Promise<Models.DocumentList<Models.Document> | undefined> {
     const queries: string[] = [Query.orderDesc("$updatedAt"), Query.limit(10)]
 
     if (pageParam) {
-        queries.push(Query.cursorAfter(pageParam.toString()))
+        queries.push(Query.cursorAfter(pageParam))
     }
 
     try {
@@ -415,5 +415,44 @@ export async function searchPosts(searchTerm: string) {
         return post;
     } catch (error) {
         console.log(error)
+    }
+}
+
+export async function getUserById(userId: string) {
+    try {
+        const user = await database.getDocument(
+            appWriteConfig.databaseId,
+            appWriteConfig.userCollectionId,
+            userId
+        );
+
+        if (!user) throw Error;
+
+        return user;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+export async function getUsers(limit?: number) {
+    const queries: any[] = [Query.orderDesc("$createdAt")];
+
+    if (limit) {
+        queries.push(Query.limit(limit));
+    }
+
+    try {
+        const users = await database.listDocuments(
+            appWriteConfig.databaseId,
+            appWriteConfig.userCollectionId,
+            queries
+        );
+
+        if (!users) throw Error;
+
+        return users;
+    } catch (error) {
+        console.log(error);
     }
 }

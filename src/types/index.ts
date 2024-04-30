@@ -1,3 +1,4 @@
+import { Models } from "appwrite"
 import React from "react"
 
 export interface INewUserType {
@@ -13,6 +14,7 @@ export interface IUserType {
     email: string;
     imageUrl: string;
     bio: string;
+    save: Models.Document[];
 }
 
 export interface IContextType {
@@ -21,7 +23,7 @@ export interface IContextType {
     isAuthenticated: boolean;
     setUser: React.Dispatch<React.SetStateAction<IUserType>>;
     setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
-    checkAuthUser: () => Promise<boolean>;
+    // checkAuthUser: () => Promise<boolean>;
 }
 
 export interface INavLink {

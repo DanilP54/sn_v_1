@@ -28,22 +28,21 @@ const Explore = () => {
     const debounceValue = useDebounce(searchValue, 500)
 
     const { data: searchedPosts, isFetching: isSearchFetching } = useSearchPost(debounceValue);
-    const { data: posts, fetchNextPage, hasNextPage, isLoading: isGetPosts } = useGetInfinityPosts();
+    const { data: posts, fetchNextPage, hasNextPage, isFetching: isNextPageFetching } = useGetInfinityPosts();
 
-    console.log(hasNextPage)
+  
+    
+    const [ref, inView] = useInView({
+        threshold: 0,
+    })
 
-    const [ref, inView] = useInView()
 
-    if (!posts)
-        return (
-            <div className="flex-center w-full h-full">
-                <Loader />
-            </div>
-        );
 
-    // React.useEffect(() => {
-    //     if (inView && !searchValue) fetchNextPage()
-    // }, [inView, searchValue])
+    React.useEffect(() => {
+        if (inView && !searchValue && !isNextPageFetching) {
+            fetchNextPage()
+        }
+    }, [inView, searchValue])
 
 
     const shouldShowSearchResults = searchValue !== "";
@@ -51,7 +50,16 @@ const Explore = () => {
         posts?.pages?.every((item) => item?.documents.length === 0);
 
 
-    return (
+
+    if (!posts) {
+        return (
+            <div className="flex-center w-full h-full">
+                <Loader />
+            </div>
+        );
+    }
+
+    return ( 
         <div className="explore-container">
             <div className="explore-inner_container">
                 <h2 className="h3-bold md:h2-bold w-full">Search Posts</h2>
@@ -101,13 +109,13 @@ const Explore = () => {
                 }
             </div>
 
-            {/* {
+            {
                 hasNextPage && !searchValue && (
-                    <div ref={ref} className='mt-10'>
+                    <div ref={ref} className='mt-10 border'>
                         <Loader />
                     </div>
                 )
-            } */}
+            }
         </div>
     )
 }
