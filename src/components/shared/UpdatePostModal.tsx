@@ -21,11 +21,6 @@ const UpdatePostModal = ({ post }: UpdatePostProps) => {
 
     const { user } = useAuthContext()
 
-
-
-
-
-
     return (
         <Dialog>
             <DialogTrigger asChild>

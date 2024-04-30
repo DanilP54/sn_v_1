@@ -30,8 +30,8 @@ const Explore = () => {
     const { data: searchedPosts, isFetching: isSearchFetching } = useSearchPost(debounceValue);
     const { data: posts, fetchNextPage, hasNextPage, isFetching: isNextPageFetching } = useGetInfinityPosts();
 
-  
-    
+
+
     const [ref, inView] = useInView({
         threshold: 0,
     })
@@ -59,7 +59,7 @@ const Explore = () => {
         );
     }
 
-    return ( 
+    return (
         <div className="explore-container">
             <div className="explore-inner_container">
                 <h2 className="h3-bold md:h2-bold w-full">Search Posts</h2>

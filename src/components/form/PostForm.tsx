@@ -13,17 +13,17 @@ import { useAuthContext } from "@/context/AuthContext.tsx";
 import { useNavigate } from "react-router-dom";
 import { Models } from 'appwrite'
 import { X } from 'lucide-react'
-import {useToast} from "@/components/ui/use-toast.ts";
+import { useToast } from "@/components/ui/use-toast.ts";
 
 
 const PostForm = ({ post, action }: {
-    post: Models.Document;
-    action: "update" | "create";
+    post?: Models.Document;
+    action?: "update" | "create";
 }) => {
 
     const navigate = useNavigate()
 
-    const {toast} = useToast()
+    const { toast } = useToast()
 
     const form = useForm<z.infer<typeof PostValidation>>({
         resolver: zodResolver(PostValidation),
@@ -35,17 +35,16 @@ const PostForm = ({ post, action }: {
 
 
 
-    const { mutateAsync: createPost, isLoading: isCreatedPost } = useCreatePostMutation()
-    const { mutateAsync: updatePost, isLoading: isUpdatePost } = useUpdatePostMutation()
+    const { mutateAsync: createPost, isPending: isCreatedPost } = useCreatePostMutation()
+    const { mutateAsync: updatePost } = useUpdatePostMutation()
 
 
 
     const watchFile = useWatch({ name: 'uploadImages', control: form.control })
-    const watchCaption = useWatch({ name: 'caption', control: form.control })
-
 
     const [mediaUrl, setMediaUrl] = React.useState<string[]>([])
 
+    console.log(mediaUrl)
 
     const { user } = useAuthContext()
 
@@ -60,7 +59,7 @@ const PostForm = ({ post, action }: {
             })
 
             if (!updatedPost) {
-                return  toast({
+                return toast({
                     title: "Please try again",
                     description: 'Any Error',
                 })

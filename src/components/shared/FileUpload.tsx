@@ -1,13 +1,9 @@
-import React, { ChangeEvent } from 'react'
 import { Image } from 'lucide-react'
 import { Input } from '../ui/input'
-import { ControllerRenderProps, useForm, useWatch } from "react-hook-form";
-import { PostValidation } from '@/lib/validation';
-
-
+import React from 'react'
 
 const FileUpload = ({ handleOnChange }: {
-    handleOnChange: (e: ChangeEvent<HTMLInputElement>) => void
+    handleOnChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }) => {
 
 
